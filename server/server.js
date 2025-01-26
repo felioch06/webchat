@@ -4,11 +4,11 @@ const express = require('express');
 const morgan = require('morgan');
 const WebSocket = require('ws');
 const path = require('path');
-const webpush = require('web-push');
 const app = express();
 
 
 const PORT = process.env.PORT || 8080;
+const server = require('http').Server(app);
 
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 // // Endpoint para recibir la suscripción del cliente
 
 // // Crear servidor WebSocket
-const wss = new WebSocket.Server({ server: app });
+const wss = new WebSocket.Server({ server });
 
 const clients = new Set();
 
