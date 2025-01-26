@@ -91,6 +91,15 @@ html, body {
     border-radius: 5px;
     background-color: #e9ecef;
     transition: background-color 0.3s ease;
+    width: fit-content;
+    max-width: 100%;
+    word-wrap: break-word;
+}
+
+#chat-messages div.sender {
+    margin-left: auto;
+    background-color: #56b4f9;
+    color: white;
 }
 
 #chat-messages div:hover {

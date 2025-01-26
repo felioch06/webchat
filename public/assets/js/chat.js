@@ -128,6 +128,9 @@ function displayMessage(data) {
         ${data.message} 
         <small>(${data.timestamp})</small>
     `;
+    if (data.username === username) {
+        messageEl.classList.add('sender');
+    }
     messagesDiv.appendChild(messageEl);
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
@@ -173,10 +176,22 @@ function cambiarNombre() {
 
 }
 
+function setEventEnter() {
+    const messageInput = document.getElementById('message');
+    messageInput.addEventListener('keyup', (el) => {
+        if (el.key === 'Enter') {
+            el.preventDefault();
+            sendMessage();
+        }
+    });
+
+}
+
 window.onload = function () {
     // Service Worker Support
     if ("serviceWorker" in navigator) {
         subscription().catch(err => console.log(err));
     }
+    setEventEnter()
     loadUsername();
 };
