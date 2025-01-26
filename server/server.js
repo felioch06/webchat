@@ -30,10 +30,10 @@ const wss = new WebSocket.Server({ server });
 const clients = new Set();
 
 wss.on('connection', (ws) => {
-    console.log({ws});
     clients.add(ws);
-
+    
     ws.on('message', (message) => {
+        console.log('Notificación: Nuevo cliente conectado');
         // Broadcast a todos los clientes conectados
         clients.forEach((client) => {
             if (client.readyState === WebSocket.OPEN) {

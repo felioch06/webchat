@@ -97,7 +97,7 @@ function startChat() {
                         const data = JSON.parse(reader.result);
                         displayMessage(data);
                         saveMessage(data);
-
+                        console.log({data});
                         if (data.username !== username) {
                             showNotification(data);
                         }
@@ -111,7 +111,7 @@ function startChat() {
                     const data = JSON.parse(event.data);
                     displayMessage(data);
                     saveMessage(data);
-
+                    console.log({data});
                     if (data.username !== username) {
                         showNotification(data);
                     }
