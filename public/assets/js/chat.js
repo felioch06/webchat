@@ -28,6 +28,8 @@ const subscription = async () => {
         applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY)
     });
 
+    localStorage.setItem("subscription", JSON.stringify(subscription));
+
     // Send Notification
     await fetch("/subscribe", {
         method: "POST",
@@ -46,7 +48,7 @@ async function showNotification(messageData) {
     if ('Notification' in window && navigator.serviceWorker) {
         await fetch('/new-message', {
            method: 'POST',
-           body: JSON.stringify({message: messageData.message, username: messageData.username}),
+           body: JSON.stringify({message: messageData.message, username: messageData.username, subscription: JSON.parse(localStorage.getItem('subscription'))}),
            headers: {
            'Content-Type': 'application/json'
            }

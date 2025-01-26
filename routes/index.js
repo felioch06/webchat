@@ -18,7 +18,7 @@ router.post('/subscribe', (req, res) => {
 });
 
 router.post('/new-message', async (req, res) => {
-  const { message, username } = req.body;
+  const { message, username, subscription } = req.body;
 
   let payload = JSON.stringify({
     title: username,
@@ -28,7 +28,9 @@ router.post('/new-message', async (req, res) => {
   res.status(200).json();
   try {
     pushSubscripton.forEach(async (sub) => {
-      await webpush.sendNotification(sub, payload);
+      if(subscription.endpoint !== sub.endpoint) {
+        await webpush.sendNotification(sub, payload);
+      }
     });
   } catch (error) {
     console.error('Error al enviar la notificación:', error);
