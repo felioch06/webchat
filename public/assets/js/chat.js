@@ -1,93 +1,65 @@
+const PUBLIC_VAPID_KEY = "BLVOl7Ni6vt6JIvtKhIcHm0aRnm9bD92HNTABXI8QHinzmQwMjwzzJZaNLwkzSWV7IthRFJW6pp5HUXc3O6tKdA";
+
 let socket;
 let username = '';
 
-// Verificar si el navegador soporta notificaciones push
-if ('serviceWorker' in navigator && 'PushManager' in window) {
-    console.log('Push notifications are supported!');
-  
-    // Registra el service worker
-    navigator.serviceWorker.register('/assets/js/service-worker.js')
-      .then(registration => {
-        console.log('Service Worker registrado con éxito:', registration);
-      })
-      .catch(error => {
-        console.error('Error al registrar el Service Worker:', error);
-      });
-  
-    // Manejar la suscripción al hacer clic en el botón
-    document.getElementById('subscribe').addEventListener('click', () => {
-      // Solicitar permisos de notificación
-      Notification.requestPermission().then(permission => {
-        if (permission === 'granted') {
-          console.log('Permiso concedido para notificaciones push.');
-  
-          // Obtener la suscripción
-          navigator.serviceWorker.ready.then(registration => {
-            registration.pushManager.subscribe({
-              userVisibleOnly: true,
-              applicationServerKey: localStorage.getItem('publicKey') // Public key VAPID
-            })
-            .then(subscription => {
-              console.log('Suscripción:', subscription);
-  
-              // Enviar la suscripción al servidor
-              fetch('/subscribe', {
-                method: 'POST',
-                body: JSON.stringify(subscription),
-                headers: {
-                  'Content-Type': 'application/json'
-                }
-              })
-              .then(response => response.json())
-              .then(data => {
-                console.log('Respuesta del servidor:', data);
-              })
-              .catch(error => {
-                console.error('Error al enviar la suscripción al servidor:', error);
-              });
-            })
-            .catch(error => {
-              console.error('Error al suscribirse:', error);
-            });
-          });
-        } else {
-          console.log('Permiso denegado para notificaciones push.');
-        }
-      });
-    });
-  } else {
-    console.log('El navegador no soporta notificaciones push.');
-  }
-  
-function requestNotificationPermission() {
-    if ('Notification' in window && navigator.serviceWorker) {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                console.log('Notificaciones habilitadas');
-            } else {
-                console.log('Notificaciones denegadas');
-            }
-        });
+function urlBase64ToUint8Array(base64String) {
+    const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
     }
+    return outputArray;
 }
 
-function showNotification(messageData) {
-    fetch('/subscribe', { method: 'post' })
-    if ('Notification' in window) {
-        // El navegador soporta notificaciones
-        if (Notification.permission === 'granted') {
-            const notification = new Notification('Nuevo mensaje', {
-                body: `${messageData.username}: ${messageData.message}`
-            });
-    
-            notification.onclick = function () {
-                window.focus(); 
-            };
+const subscription = async () => {
+    // Service Worker
+    const register = await navigator.serviceWorker.register("/service-worker.js", {
+        scope: "/"
+    });
+
+    // Listen Push Notifications
+    const subscription = await register.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY)
+    });
+
+    // Send Notification
+    await fetch("/subscribe", {
+        method: "POST",
+        body: JSON.stringify(subscription),
+        headers: {
+            "Content-Type": "application/json"
         }
-    } else {
-        alert('Las notificaciones no son soportadas en este navegador.');
-        console.log('Las notificaciones no son soportadas en este navegador.');
-    }
+    });
+
+    await fetch("/subscribe", {
+        method: "POST",
+        body: JSON.stringify(subscription),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+
+    console.log("Subscribed!");
+};
+
+
+
+async function showNotification(messageData) {
+    if ('Notification' in window && navigator.serviceWorker) {
+        await fetch('/new-message', {
+           method: 'POST',
+           body: JSON.stringify({message: messageData.message, username: messageData.username}),
+           headers: {
+           'Content-Type': 'application/json'
+           }
+       });
+   }
 }
 
 function loadMessages() {
@@ -125,7 +97,7 @@ function startChat() {
                         const data = JSON.parse(reader.result);
                         displayMessage(data);
                         saveMessage(data);
-                        
+
                         if (data.username !== username) {
                             showNotification(data);
                         }
@@ -139,7 +111,7 @@ function startChat() {
                     const data = JSON.parse(event.data);
                     displayMessage(data);
                     saveMessage(data);
-                    
+
                     if (data.username !== username) {
                         showNotification(data);
                     }
@@ -149,7 +121,7 @@ function startChat() {
             }
         };
 
-        loadMessages(); 
+        loadMessages();
     }
 }
 
@@ -178,21 +150,16 @@ function sendMessage() {
 
         socket.send(JSON.stringify(messageData));
         messageInput.value = '';
-        saveMessage(messageData); 
+        saveMessage(messageData);
     }
 }
-
-window.onload = function() {
-    loadUsername();
-    requestNotificationPermission();  
-};
 
 function loadUsername() {
     const storedUsername = localStorage.getItem('username');
     if (storedUsername) {
         username = storedUsername;
         document.getElementById('username').value = username;
-        startChat(); 
+        startChat();
     }
 }
 
@@ -210,3 +177,11 @@ function cambiarNombre() {
     document.getElementById('chat').style.display = 'none';
 
 }
+
+window.onload = function () {
+    // Service Worker Support
+    if ("serviceWorker" in navigator) {
+        subscription().catch(err => console.log(err));
+    }
+    loadUsername();
+};

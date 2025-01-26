@@ -5,8 +5,8 @@ self.addEventListener('push', event => {
   
     const options = {
       body: message,
-      icon: '/icon.png', // Puedes agregar un icono para la notificación
-      badge: '/badge.png' // Puedes agregar un badge
+      icon: 'https://cdn-icons-png.flaticon.com/512/1/1176.png',
+      badge: 'https://cdn-icons-png.flaticon.com/512/1/1176.png' 
     };
   
     event.waitUntil(
