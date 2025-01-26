@@ -43,6 +43,7 @@ function saveMessage(data) {
 function startChat() {
     username = document.getElementById('username').value.trim();
     if (username) {
+        saveUsername()
         document.getElementById('login').style.display = 'none';
         document.getElementById('chat').style.display = 'flex';
 
@@ -135,4 +136,13 @@ function saveUsername() {
     if (username) {
         localStorage.setItem('username', username);
     }
+}
+
+function cambiarNombre() {
+    username = document.getElementById('username').value.trim();
+    saveUsername();
+
+    document.getElementById('login').style.display = 'flex';
+    document.getElementById('chat').style.display = 'none';
+
 }
