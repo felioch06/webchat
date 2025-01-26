@@ -22,7 +22,6 @@ router.post('/new-message', async (req, res) => {
 
   let payload = JSON.stringify({
     title: username,
-    click_action: location.origin,
     message
   });
 
