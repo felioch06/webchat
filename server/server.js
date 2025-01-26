@@ -1,9 +1,20 @@
 const express = require('express');
 const WebSocket = require('ws');
 const path = require('path');
+const webpush = require('web-push');
+
 
 const app = express();
 const server = require('http').Server(app);
+
+const vapidKeys = webpush.generateVAPIDKeys()
+
+  // Configura las claves VAPID
+webpush.setVapidDetails(
+    'mailto:felipipe88806@gmail.com', // tu correo electrónico
+    vapidKeys.publicKey,
+    vapidKeys.privateKey
+  );
 
 // Servir archivos estáticos desde la carpeta 'assets'
 app.use('/assets', express.static(path.join(__dirname, '../assets')));
@@ -12,6 +23,27 @@ app.use('/assets', express.static(path.join(__dirname, '../assets')));
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../index.html'));
 });
+
+// Endpoint para recibir la suscripción del cliente
+app.post('/subscribe', (req, res) => {
+    const subscription = req.body;
+    console.log('Suscripción recibida:', subscription);
+  
+    // Enviar notificación push de ejemplo
+    const payload = JSON.stringify({
+      title: '¡Hola!',
+      message: 'Tienes una nueva notificación.'
+    });
+  
+    webpush.sendNotification(subscription, payload)
+      .then(() => {
+        res.status(200).json({ message: 'Notificación enviada con éxito' });
+      })
+      .catch((err) => {
+        console.error('Error al enviar la notificación', err);
+        res.status(500).json({ error: 'Error al enviar la notificación' });
+      });
+  });
 
 // Crear servidor WebSocket
 const wss = new WebSocket.Server({ server });
