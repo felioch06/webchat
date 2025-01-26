@@ -1,25 +1,19 @@
+const express = require('express');
 const WebSocket = require('ws');
-const http = require('http');
-const fs = require('fs');
 const path = require('path');
 
-const server = http.createServer((req, res) => {
-    if (req.method === 'GET' && req.url === '/') {
-        fs.readFile(path.join(__dirname, '../index.html'), 'utf8', (err, data) => {
-            if (err) {
-                res.writeHead(500, { 'Content-Type': 'text/plain' });
-                res.end('Error al leer el archivo');
-                return;
-            }
-            res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.end(data);
-        });
-    } else {
-        res.writeHead(404, { 'Content-Type': 'text/plain' });
-        res.end('Página no encontrada');
-    }
+const app = express();
+const server = require('http').Server(app);
+
+// Servir archivos estáticos desde la carpeta 'assets'
+app.use('/assets', express.static(path.join(__dirname, '../assets')));
+
+// Ruta para el archivo index.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../index.html'));
 });
 
+// Crear servidor WebSocket
 const wss = new WebSocket.Server({ server });
 
 const clients = new Set();
@@ -28,6 +22,7 @@ wss.on('connection', (ws) => {
     clients.add(ws);
 
     ws.on('message', (message) => {
+        // Broadcast a todos los clientes conectados
         clients.forEach((client) => {
             if (client.readyState === WebSocket.OPEN) {
                 client.send(message);
@@ -40,7 +35,8 @@ wss.on('connection', (ws) => {
     });
 });
 
+// Iniciar el servidor en el puerto 8080 o en el puerto configurado en el entorno
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
-    console.log(`WebSocket server running on port ${PORT}`);
+    console.log(`Servidor WebSocket y Express corriendo en el puerto ${PORT}`);
 });
