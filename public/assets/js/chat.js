@@ -18,28 +18,29 @@ function urlBase64ToUint8Array(base64String) {
 
 const subscription = async () => {
     // Service Worker
-    const register = await navigator.serviceWorker.register("/service-worker.js", {
-        scope: "/"
-    });
+    const register = await navigator.serviceWorker.register("/service-worker.js")
 
-    // Listen Push Notifications
-    const subscription = await register.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY)
-    });
+    setTimeout(async () => {
+        // Listen Push Notifications
+        const subscription = await register.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPID_KEY)
+        });
+    
+        localStorage.setItem("subscription", JSON.stringify(subscription));
+    
+        // Send Notification
+        await fetch("/subscribe", {
+            method: "POST",
+            body: JSON.stringify(subscription),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+    
+        console.log("Subscribed!");
+    },1000);
 
-    localStorage.setItem("subscription", JSON.stringify(subscription));
-
-    // Send Notification
-    await fetch("/subscribe", {
-        method: "POST",
-        body: JSON.stringify(subscription),
-        headers: {
-            "Content-Type": "application/json"
-        }
-    });
-
-    console.log("Subscribed!");
 };
 
 
