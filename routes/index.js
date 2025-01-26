@@ -28,7 +28,7 @@ router.post('/new-message', async (req, res) => {
   res.status(200).json();
   try {
     pushSubscripton.forEach(async (sub) => {
-      if(subscription.endpoint !== sub.endpoint) {
+      if(subscription.endpoint == sub.endpoint) {
         await webpush.sendNotification(sub, payload);
       }
     });
