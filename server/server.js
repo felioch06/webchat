@@ -5,8 +5,7 @@ const path = require('path');
 
 const server = http.createServer((req, res) => {
     if (req.method === 'GET' && req.url === '/') {
-        // Lee el archivo index.html y lo envía como respuesta
-        fs.readFile(path.join(__dirname, 'index.html'), 'utf8', (err, data) => {
+        fs.readFile(path.join(__dirname, '../index.html'), 'utf8', (err, data) => {
             if (err) {
                 res.writeHead(500, { 'Content-Type': 'text/plain' });
                 res.end('Error al leer el archivo');
@@ -29,7 +28,6 @@ wss.on('connection', (ws) => {
     clients.add(ws);
 
     ws.on('message', (message) => {
-        // Broadcast to all clients
         clients.forEach((client) => {
             if (client.readyState === WebSocket.OPEN) {
                 client.send(message);
