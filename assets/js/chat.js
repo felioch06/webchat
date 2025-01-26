@@ -14,15 +14,20 @@ function requestNotificationPermission() {
 }
 
 function showNotification(messageData) {
-    if (Notification.permission === 'granted') {
-        const notification = new Notification('Nuevo mensaje', {
-            body: `${messageData.username}: ${messageData.message}`,
-            icon: 'assets/images/icon.png'  
-        });
-
-        notification.onclick = function () {
-            window.focus(); 
-        };
+    if ('Notification' in window) {
+        // El navegador soporta notificaciones
+        if (Notification.permission === 'granted') {
+            const notification = new Notification('Nuevo mensaje', {
+                body: `${messageData.username}: ${messageData.message}`
+            });
+    
+            notification.onclick = function () {
+                window.focus(); 
+            };
+        }
+    } else {
+        alert('Las notificaciones no son soportadas en este navegador.');
+        console.log('Las notificaciones no son soportadas en este navegador.');
     }
 }
 
