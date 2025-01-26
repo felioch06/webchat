@@ -37,14 +37,6 @@ const subscription = async () => {
         }
     });
 
-    await fetch("/subscribe", {
-        method: "POST",
-        body: JSON.stringify(subscription),
-        headers: {
-            "Content-Type": "application/json"
-        }
-    });
-
     console.log("Subscribed!");
 };
 
