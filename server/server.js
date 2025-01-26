@@ -8,7 +8,7 @@ const app = express();
 
 
 const PORT = process.env.PORT || 8080;
-const server = require('http').Server(app);
+const server = require('http').Server(app); 
 
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
@@ -30,6 +30,7 @@ const wss = new WebSocket.Server({ server });
 const clients = new Set();
 
 wss.on('connection', (ws) => {
+    console.log({ws});
     clients.add(ws);
 
     ws.on('message', (message) => {
@@ -47,6 +48,6 @@ wss.on('connection', (ws) => {
 });
 
 // Iniciar el servidor en el puerto 8080 o en el puerto configurado en el entorno
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Servidor WebSocket y Express corriendo en el puerto ${PORT}`);
 });
