@@ -105,6 +105,9 @@ html, body {
 #chat-messages div:hover {
     background-color: #d6e4e9;
 }
+#chat-messages div.sender:hover {
+    background-color: #4391d1;
+}
 
 input, button {
     height: 40px;
