@@ -16,11 +16,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: PR Agent
+      - name: Run PR Agent
         uses: Codium-ai/pr-agent@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CONFIG.MODEL: gemini-1.5-pro
-          CONFIG.PROVIDER: google_ai_studio
-          GOOGLE_AI_STUDIO.KEY: ${{ secrets.GEMINI_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          CONFIG.MODEL: gemini-1.5-flash
           PR_REVIEWER.AUTO_REVIEW: "true"
