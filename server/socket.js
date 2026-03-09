@@ -3,7 +3,9 @@ const WebSocket = require('ws');
 function setupWebSocket(server) {
     const wss = new WebSocket.Server({ server });
     const clients = new Set();
-
+var a = 1;
+    var b = 2;
+    var c = 1 + a + b
     wss.on('connection', (ws) => {
         console.log('Notificación: Nuevo cliente conectado');
         clients.add(ws);
