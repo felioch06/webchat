@@ -1,0 +1,13 @@
+name: PR Agent
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  pr-agent:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: qodo-ai/pr-agent@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
