@@ -22,3 +22,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CONFIG.MODEL: gemini-1.5-flash
           GOOGLE_AI_STUDIO.KEY: ${{ secrets.GEMINI_API_KEY }}
+          PR_REVIEWER.AUTO_REVIEW: "true"
