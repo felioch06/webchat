@@ -21,5 +21,6 @@ jobs:
         uses: aido-dev/aido-action@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          provider: ollama
-          model: llama3
+          provider: gemini
+          model: gemini-1.5-flash
+          api-key: ${{ secrets.GEMINI_API_KEY }}
